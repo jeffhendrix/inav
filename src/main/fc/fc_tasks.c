@@ -113,6 +113,11 @@ void taskHandleSerial(timeUs_t currentTimeUs)
 	// Capture HDZero messages to determine if VTX is connected
     hdzeroOsdSerialProcess(mspFcProcessCommand);
 #endif
+
+#ifdef USE_DJIWTF_OSD
+    // Capture DJI messages to determine if VTX is connected
+    djiWtfOsdSerialProcess(mspFcProcessCommand);
+#endif
 }
 
 void taskUpdateBattery(timeUs_t currentTimeUs)

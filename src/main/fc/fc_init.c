@@ -552,6 +552,11 @@ void init(void)
             osdDisplayPort = hdzeroOsdDisplayPortInit();
         }
 #endif
+#ifdef USE_DJIWTF_OSD
+        if (!osdDisplayPort) {
+            osdDisplayPort = djiWtfOsdDisplayPortInit();
+        }
+#endif
 #if defined(USE_MAX7456)
         // If there is a max7456 chip for the OSD and we have no
         // external OSD initialized, use it.
