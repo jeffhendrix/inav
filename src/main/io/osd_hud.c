@@ -135,7 +135,7 @@ void osdHudDrawPoi(uint32_t poiDistance, int16_t poiDirection, int32_t poiAltitu
     uint8_t minY = osdConfig()->hud_margin_v;
     uint8_t maxY = osdGetDisplayPort()->rows - osdConfig()->hud_margin_v - 2;
 
-    osdCrosshairPosition(&center_x, &center_y);
+    osdCrosshairPosition(&center_x, &center_y, false);
 
     if (!(osdConfig()->pan_servo_pwm2centideg == 0)){
         poiDirection = poiDirection + osdGetPanServoOffset();
@@ -298,7 +298,7 @@ void osdHudDrawPoi(uint32_t poiDistance, int16_t poiDirection, int32_t poiAltitu
 /*
  * Draw the crosshair
  */
-void osdHudDrawCrosshair(displayCanvas_t *canvas, uint8_t px, uint8_t py)
+void osdHudDrawCrosshair(displayCanvas_t *canvas, uint8_t px, uint8_t py, bool erase)
 {
     static const uint16_t crh_style_all[] = {
         SYM_AH_CH_LEFT, SYM_AH_CH_CENTER, SYM_AH_CH_RIGHT,
@@ -319,9 +319,9 @@ void osdHudDrawCrosshair(displayCanvas_t *canvas, uint8_t px, uint8_t py)
 
     uint8_t crh_crosshair = (osd_crosshairs_style_e)osdConfig()->crosshairs_style;
 
-    displayWriteChar(osdGetDisplayPort(), px - 1, py,crh_style_all[crh_crosshair * 3]);
-    displayWriteChar(osdGetDisplayPort(), px, py, crh_style_all[crh_crosshair * 3 + 1]);
-    displayWriteChar(osdGetDisplayPort(), px + 1, py, crh_style_all[crh_crosshair * 3 + 2]);
+    displayWriteChar(osdGetDisplayPort(), px - 1, py, erase ? SYM_BLANK : crh_style_all[crh_crosshair * 3]);
+    displayWriteChar(osdGetDisplayPort(), px, py, erase ? SYM_BLANK : crh_style_all[crh_crosshair * 3 + 1]);
+    displayWriteChar(osdGetDisplayPort(), px + 1, py, erase ? SYM_BLANK : crh_style_all[crh_crosshair * 3 + 2]);
 
     if ((crh_style_all[crh_crosshair * 3]) == SYM_AH_CH_AIRCRAFT1) {
         displayWriteChar(osdGetDisplayPort(), px - 2, py, SYM_AH_CH_AIRCRAFT0);

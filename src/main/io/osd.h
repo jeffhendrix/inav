@@ -447,6 +447,7 @@ typedef struct osdConfig_s {
     char    osd_switch_indicator3_name[OSD_SWITCH_INDICATOR_NAME_LENGTH + 1];      // Name to use for switch indicator 3.
     uint8_t osd_switch_indicator3_channel;     // RC Channel to use for switch indicator 3.
     bool    osd_switch_indicators_align_left;   // Align switch indicator name to left of the switch.
+    uint8_t crosshair_us_col;                   // divide pan servo position to get osd column offset to keep crosshair forward
 } osdConfig_t;
 
 PG_DECLARE(osdConfig_t, osdConfig);
@@ -481,7 +482,7 @@ bool osdUsingScaledThrottle(void);
 void osdStartedSaveProcess(void);
 void osdShowEEPROMSavedNotification(void);
 
-void osdCrosshairPosition(uint8_t *x, uint8_t *y);
+void osdCrosshairPosition(uint8_t *x, uint8_t *y, bool pan);
 bool osdFormatCentiNumber(char *buff, int32_t centivalue, uint32_t scale, int maxDecimals, int maxScaledDecimals, int length);
 void osdFormatAltitudeSymbol(char *buff, int32_t alt);
 void osdFormatVelocityStr(char* buff, int32_t vel, bool _3D, bool _max);
@@ -489,6 +490,7 @@ void osdFormatVelocityStr(char* buff, int32_t vel, bool _3D, bool _max);
 int osdGetHeadingAngle(int angle);
 
 int16_t osdGetPanServoOffset(void);
+int16_t osdGetPanColumnOffset(void);
 
 /**
  * @brief Get the OSD system message

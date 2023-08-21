@@ -3466,6 +3466,13 @@ groups:
         type: bool
         default_value: OFF
 
+      - name: osd_crosshair_us_col
+        description: Number of uS servo travel per OSD column (start with 10)
+        field: crosshair_us_col
+        min: -128
+        max: 127
+        default_value: 0
+
       - name: osd_esc_rpm_precision
         description: Number of characters used to display the RPM value.
         field: esc_rpm_precision

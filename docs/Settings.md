@@ -4041,6 +4041,15 @@ To set the visual type for the crosshair
 | DEFAULT |  |  |
 
 ---
+### osd_crosshair_us_col
+
+Set number of pan servo uS for each OSD column
+ 
+| Default | Min | Max |
+| --- | --- | --- |
+| 0 | -128 | 127 |
+
+---
 
 ### osd_crsf_lq_format
 

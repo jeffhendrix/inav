@@ -117,7 +117,7 @@ void osdGridDrawArtificialHorizon(displayPort_t *display, unsigned gx, unsigned 
     uint8_t elemPosX;
     uint8_t elemPosY;
 
-    osdCrosshairPosition(&elemPosX, &elemPosY);
+    osdCrosshairPosition(&elemPosX, &elemPosY, false);
 
     // Store the positions we draw over to erase only these at the next iteration
     static int8_t previous_written[OSD_AHI_PREV_SIZE];
@@ -300,7 +300,7 @@ void osdGridDrawSidebars(displayPort_t *display)
     uint8_t elemPosX;
     uint8_t elemPosY;
 
-    osdCrosshairPosition(&elemPosX, &elemPosY);
+    osdCrosshairPosition(&elemPosX, &elemPosY, false);
 
     static osd_sidebar_t left;
     static osd_sidebar_t right;

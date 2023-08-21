@@ -1083,9 +1083,16 @@ static void osdUpdateBatteryCapacityOrVoltageTextAttributes(textAttributes_t *at
     }
 }
 
-void osdCrosshairPosition(uint8_t *x, uint8_t *y)
+void osdCrosshairPosition(uint8_t *x, uint8_t *y, bool pan)
 {
-    *x = osdDisplayPort->cols / 2;
+	int16_t columnOffset = 0;
+    int16_t calcX;
+
+	if (pan && !(osdConfig()->crosshair_us_col == 0)){
+		columnOffset = osdGetPanColumnOffset();
+	}
+    calcX = osdDisplayPort->cols / 2 + columnOffset;
+    *x = (calcX < 0) ? 0 : calcX;
     *y = osdDisplayPort->rows / 2;
     *y -= osdConfig()->horizon_offset; // positive horizon_offset moves the HUD up, negative moves down
 }
@@ -1230,6 +1237,14 @@ int16_t osdGetPanServoOffset(void)
     int16_t servoPosition = servo[servoIndex];
     int16_t servoMiddle = servoParams(servoIndex)->middle;
     return (int16_t)CENTIDEGREES_TO_DEGREES((servoPosition - servoMiddle) * osdConfig()->pan_servo_pwm2centideg);
+}
+
+int16_t osdGetPanColumnOffset(void)
+{
+    int8_t servoIndex = osdConfig()->pan_servo_index;
+    int16_t servoPosition = servo[servoIndex];
+    int16_t servoMiddle = servoParams(servoIndex)->middle;
+    return (int16_t)((servoPosition - servoMiddle) / osdConfig()->crosshair_us_col);
 }
 
 // Returns a heading angle in degrees normalized to [0, 360).
@@ -1654,6 +1669,8 @@ void osdDisplaySwitchIndicator(const char *swName, int rcValue, char *buff) {
 
 static bool osdDrawSingleElement(uint8_t item)
 {
+    static int8_t previousX, previousY = 0;
+
     uint16_t pos = osdLayoutsConfig()->item_pos[currentLayout][item];
     if (!OSD_VISIBLE(pos)) {
         return false;
@@ -2326,8 +2343,18 @@ static bool osdDrawSingleElement(uint8_t item)
 
     case OSD_CROSSHAIRS: // Hud is a sub-element of the crosshair
 
-        osdCrosshairPosition(&elemPosX, &elemPosY);
-        osdHudDrawCrosshair(osdGetDisplayPortCanvas(), elemPosX, elemPosY);
+        osdCrosshairPosition(&elemPosX, &elemPosY, true);
+        if (previousX != elemPosX || previousY != elemPosY) {
+            if (previousX > 0 && previousX < osdDisplayPort->cols) {
+                osdHudDrawCrosshair(osdGetDisplayPortCanvas(), previousX, previousY, true);
+            }
+            previousX = elemPosX;
+            previousY = elemPosY;
+        }
+
+        if (elemPosX > 0 && elemPosX < osdDisplayPort->cols) {
+            osdHudDrawCrosshair(osdGetDisplayPortCanvas(), elemPosX, elemPosY, false);
+        }
 
         if (osdConfig()->hud_homing && STATE(GPS_FIX) && STATE(GPS_FIX_HOME) && isImuHeadingValid()) {
             osdHudDrawHoming(elemPosX, elemPosY);
@@ -4753,8 +4780,7 @@ int osdGetActiveLayout(bool *overridden)
 
 bool osdItemIsFixed(osd_items_e item)
 {
-    return item == OSD_CROSSHAIRS ||
-        item == OSD_ARTIFICIAL_HORIZON ||
+    return item == OSD_ARTIFICIAL_HORIZON ||
         item == OSD_HORIZON_SIDEBARS;
 }
 
